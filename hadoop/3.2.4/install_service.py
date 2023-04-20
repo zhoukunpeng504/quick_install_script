@@ -95,11 +95,62 @@ hdfs_site_content = f'''<?xml version="1.0" encoding="UTF-8"?>
 
 </configuration>'''
 
+yarn_site_content = f'''<?xml version="1.0"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+<configuration>
+
+ <property>
+  <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+ </property>
+</configuration>'''
+
+mapred_site_content = f'''<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+ <property>
+  <name>mapreduce.framework.name</name>
+   <value>yarn</value>
+ </property>
+</configuration>'''
+
 sbin_dfs_prefix = '''HDFS_DATANODE_USER=root
 HADOOP_SECURE_DN_USER=hdfs
 HDFS_NAMENODE_USER=root
 HDFS_SECONDARYNAMENODE_USER=root'''
 
+
+sbin_yarn_prefix = '''YARN_RESOURCEMANAGER_USER=root
+HADOOP_SECURE_DN_USER=yarn
+YARN_NODEMANAGER_USER=root'''
 
 
 if __name__ == '__main__':
@@ -116,7 +167,7 @@ if __name__ == '__main__':
     # 解压安装包
     os.system("cd /data && tar -zxvf OpenJDK8U-jdk_x64_linux_hotspot_8u362b09.tar.gz")
     os.system("cd /data && tar -zxvf hadoop-3.2.4.tar.gz")
-    os.system("mkdir -p ")
+    # os.system("mkdir -p ")
     print("openjdk hadoop解压完成")
 
 
@@ -144,9 +195,13 @@ if __name__ == '__main__':
         f.write(core_site_content)
     with open("/data/hadoop-3.2.4/etc/hadoop/hdfs-site.xml", "w") as f:
         f.write(hdfs_site_content)
+    with open("/data/hadoop-3.2.4/etc/hadoop/yarn-site.xml", "w") as f:
+        f.write(yarn_site_content)
+    with open("/data/hadoop-3.2.4/etc/hadoop/mapred-site.xml", "w") as f:
+        f.write(mapred_site_content)
 
 
-    # 4. 修复root用户无法执行start-dfs.sh和 stop-dfs.sh问题
+    # 4. 修复root用户无法执行start-dfs.sh和 stop-dfs.sh  start-yarn.sh  stop-yarn.sh
     # start-dfs.sh修复，允许root用户
     with open("/data/hadoop-3.2.4/sbin/start-dfs.sh", "r") as f:
         start_dfs_content= f.read()
@@ -163,7 +218,23 @@ if __name__ == '__main__':
                                                       '#!/usr/bin/env bash\n' + sbin_dfs_prefix + '\n')
     with open("/data/hadoop-3.2.4/sbin/stop-dfs.sh", "w") as f:
         f.write(stop_dfs_content)
-    print("start-dfs.sh  stop-dfs.sh修复完成，已允许root用户执行")
+    # start-yarn.sh修复，允许root用户
+    with open("/data/hadoop-3.2.4/sbin/start-yarn.sh", "r") as f:
+        start_yarn_content= f.read()
+    if sbin_yarn_prefix not in start_yarn_content:
+        start_yarn_content = start_yarn_content.replace('#!/usr/bin/env bash\n',
+                                                      '#!/usr/bin/env bash\n' + sbin_dfs_prefix+'\n')
+    with open("/data/hadoop-3.2.4/sbin/start-yarn.sh", "w") as f:
+        f.write(start_yarn_content)
+    # stop-yarn.sh修复，允许root用户
+    with open("/data/hadoop-3.2.4/sbin/stop-yarn.sh", "r") as f:
+        stop_yarn_content = f.read()
+    if sbin_yarn_prefix not in stop_yarn_content:
+        stop_yarn_content = stop_yarn_content.replace('#!/usr/bin/env bash\n',
+                                                      '#!/usr/bin/env bash\n' + sbin_dfs_prefix + '\n')
+    with open("/data/hadoop-3.2.4/sbin/stop-yarn.sh", "w") as f:
+        f.write(stop_yarn_content)
+    print("start-dfs.sh  stop-dfs.sh start-yarn.sh stop-yarn.sh修复完成，已允许root用户执行")
 
 
     # 5. 完成
@@ -171,8 +242,11 @@ if __name__ == '__main__':
         _ = f.read()
     if './start-dfs.sh' not in _:
         os.system("echo 'cd /data/hadoop-3.2.4/sbin && ./start-dfs.sh'>> /etc/rc.local")
-    print("请执行如下指令启动hdfs:\n"
+    if './start-yarn.sh' not in _:
+        os.system("echo 'cd /data/hadoop-3.2.4/sbin && ./start-yarn.sh'>> /etc/rc.local")
+    print("请执行如下指令启动hdfs及yarn:\n"
           "export JAVA_HOME=/data/jdk8u362-b09\n"
-          "cd /data/hadoop-3.2.4/sbin && ./start-dfs.sh")
+          "cd /data/hadoop-3.2.4/sbin && ./start-dfs.sh\n"
+          "cd /data/hadoop-3.2.4/sbin && ./start-yarn.sh")
 
 
