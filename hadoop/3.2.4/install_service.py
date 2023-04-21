@@ -115,6 +115,18 @@ yarn_site_content = f'''<?xml version="1.0"?>
   <name>yarn.nodemanager.aux-services</name>
     <value>mapreduce_shuffle</value>
  </property>
+ <property>
+    <name>yarn.app.mapreduce.am.env</name>
+    <value>HADOOP_MAPRED_HOME=/data/hadoop-3.2.4</value>
+ </property>
+ <property>
+    <name>mapreduce.map.env</name>
+    <value>HADOOP_MAPRED_HOME=/data/hadoop-3.2.4</value>
+ </property>
+ <property>
+    <name>mapreduce.reduce.env</name>
+    <value>HADOOP_MAPRED_HOME=/data/hadoop-3.2.4</value>
+ </property>
 </configuration>'''
 
 mapred_site_content = f'''<?xml version="1.0"?>
@@ -223,7 +235,7 @@ if __name__ == '__main__':
         start_yarn_content= f.read()
     if sbin_yarn_prefix not in start_yarn_content:
         start_yarn_content = start_yarn_content.replace('#!/usr/bin/env bash\n',
-                                                      '#!/usr/bin/env bash\n' + sbin_dfs_prefix+'\n')
+                                                      '#!/usr/bin/env bash\n' + sbin_yarn_prefix +'\n')
     with open("/data/hadoop-3.2.4/sbin/start-yarn.sh", "w") as f:
         f.write(start_yarn_content)
     # stop-yarn.sh修复，允许root用户
@@ -231,7 +243,7 @@ if __name__ == '__main__':
         stop_yarn_content = f.read()
     if sbin_yarn_prefix not in stop_yarn_content:
         stop_yarn_content = stop_yarn_content.replace('#!/usr/bin/env bash\n',
-                                                      '#!/usr/bin/env bash\n' + sbin_dfs_prefix + '\n')
+                                                      '#!/usr/bin/env bash\n' + sbin_yarn_prefix + '\n')
     with open("/data/hadoop-3.2.4/sbin/stop-yarn.sh", "w") as f:
         f.write(stop_yarn_content)
     print("start-dfs.sh  stop-dfs.sh start-yarn.sh stop-yarn.sh修复完成，已允许root用户执行")
@@ -244,8 +256,11 @@ if __name__ == '__main__':
         os.system("echo 'cd /data/hadoop-3.2.4/sbin && ./start-dfs.sh'>> /etc/rc.local")
     if './start-yarn.sh' not in _:
         os.system("echo 'cd /data/hadoop-3.2.4/sbin && ./start-yarn.sh'>> /etc/rc.local")
-    print("请执行如下指令启动hdfs及yarn:\n"
+    print("1. 请执行如下命令初始化hdfs:\n"
+          "source /etc/profile \n"
           "export JAVA_HOME=/data/jdk8u362-b09\n"
+          "cd /data/hadoop-3.2.4/bin && ./hdfs namenode -format\n"
+          "2. 请执行如下命令启动hdfs及yarn：\n"
           "cd /data/hadoop-3.2.4/sbin && ./start-dfs.sh\n"
           "cd /data/hadoop-3.2.4/sbin && ./start-yarn.sh")
 
