@@ -115,6 +115,18 @@ yarn_site_content = f'''<?xml version="1.0"?>
   <name>yarn.nodemanager.aux-services</name>
     <value>mapreduce_shuffle</value>
  </property>
+ <property>
+    <name>yarn.app.mapreduce.am.env</name>
+    <value>HADOOP_MAPRED_HOME=/data/hadoop-3.2.4</value>
+ </property>
+ <property>
+    <name>mapreduce.map.env</name>
+    <value>HADOOP_MAPRED_HOME=/data/hadoop-3.2.4</value>
+ </property>
+ <property>
+    <name>mapreduce.reduce.env</name>
+    <value>HADOOP_MAPRED_HOME=/data/hadoop-3.2.4</value>
+ </property>
 </configuration>'''
 
 mapred_site_content = f'''<?xml version="1.0"?>

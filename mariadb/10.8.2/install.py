@@ -44,16 +44,30 @@ if __name__ == '__main__':
         else:
             print("目录不能为空！")
             time.sleep(1)
+
+    while 1:
+        port = input("输入数据库要绑定的端口：(如：3306)")
+        port = port.strip()
+        try:
+            port = int(port)
+            assert port >3000
+        except Exception as e:
+            print("端口必须是大于300的数字！")
+            time.sleep(1)
+        else:
+            break
+
     data_dir = os.path.join(dir_, 'mariadb_data')
     conf_dir = os.path.join(dir_, 'mariadb_conf')
     os.system("mkdir -p %s" % data_dir)
     os.system("mkdir -p %s" % conf_dir)
     with open(os.path.join(conf_dir,'my.cnf'), "w") as f:
         f.write(mariadb_conf_content)
-    cmd = ("docker run --name mariadb --net=host  "
+    cmd = ("docker run --name mariadb_%s -p %s:3306  --restart=always "
               "-v %s:/var/lib/mysql "
               "-v %s:/etc/mysql/conf.d   "
               f"-e  MARIADB_ROOT_PASSWORD=%s  "
-              "-d    mariadb:10.8 "  % (data_dir, conf_dir, password))
+              "-d    mariadb:10.8.2 "  % (port,port,data_dir, conf_dir, password))
     print(cmd)
     os.system(cmd)
+    print("mariadb 10.8.2安装成功！配置文件在容器内的/etc/mysql/conf.d目录，可自行优化配置！ ")
