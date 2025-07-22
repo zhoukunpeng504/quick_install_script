@@ -13,6 +13,7 @@ if __name__ == '__main__':
     # 安装包下载及解压
     #os.system("rm -rf apache-hive-3.1.3-bin.tar.gz")
     os.system("rm -rf /data/apache-hive-3.1.3-bin")
+    os.system("wget http://starchain.cn.gcimg.net/apache-hive-3.1.3-bin.tar.gz  -O  apache-hive-3.1.3-bin.tar.gz")
     os.system("cd /data && cp %s/apache-hive-3.1.3-bin.tar.gz  /data/apache-hive-3.1.3-bin.tar.gz" % current_dir)
     os.system("cd /data && tar -zxvf apache-hive-3.1.3-bin.tar.gz")
     # 删除配置文件
