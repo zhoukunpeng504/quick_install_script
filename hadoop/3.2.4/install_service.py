@@ -9,7 +9,7 @@ import sys
 profile_append = \
 '''
 # ##$hadoop install$##
-export JAVA_HOME=/data/jdk8u362-b09
+export JAVA_HOME=/data/jdk8u452-b09
 export HADOOP_HOME=/data/hadoop-3.2.4
 export HADOOP_INSTALL=$HADOOP_HOME
 export HADOOP_MAPRED_HOME=$HADOOP_HOME
@@ -25,7 +25,7 @@ export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
 hostname = 'hadoop324'
 
 
-hadoop_env_sh_content = '''export JAVA_HOME=/data/jdk8u362-b09
+hadoop_env_sh_content = '''export JAVA_HOME=/data/jdk8u452-b09
 export HADOOP_OS_TYPE=${HADOOP_OS_TYPE:-$(uname -s)}
 '''
 
@@ -168,16 +168,16 @@ YARN_NODEMANAGER_USER=root'''
 if __name__ == '__main__':
     # 1 下载安装包并解压
     os.system("mkdir -p /data")
-    os.system("rm -rf /data/OpenJDK8U-jdk_x64_linux_hotspot_8u362b09.tar.gz")
+    os.system("rm -rf /data/jdk8.tar.gz")
     os.system("rm -rf /data/hadoop-3.2.4.tar.gz")
-    os.system("cd /data && wget https://mirrors.tuna.tsinghua.edu.cn/Adoptium/8/jdk/x64/linux/"
-              "OpenJDK8U-jdk_x64_linux_hotspot_8u362b09.tar.gz --no-check-certificate")
+    os.system("cd /data && wget https://mirrors.tuna.tsinghua.edu.cn/Adoptium/8/jdk/"
+              "x64/linux/OpenJDK8U-jdk_x64_linux_hotspot_8u452b09.tar.gz -O /data/jdk8.tar.gz --no-check-certificate")
     print("jdk8下载完成")
     os.system("cd /data && wget https://mirrors.tuna.tsinghua.edu.cn/"
               "apache/hadoop/common/hadoop-3.2.4/hadoop-3.2.4.tar.gz --no-check-certificate")
     print("hadoop3.2.4 下载完成")
     # 解压安装包
-    os.system("cd /data && tar -zxvf OpenJDK8U-jdk_x64_linux_hotspot_8u362b09.tar.gz")
+    os.system("cd /data && tar -zxvf jdk8.tar.gz")
     os.system("cd /data && tar -zxvf hadoop-3.2.4.tar.gz")
     # os.system("mkdir -p ")
     print("openjdk hadoop解压完成")
@@ -258,7 +258,7 @@ if __name__ == '__main__':
         os.system("echo 'cd /data/hadoop-3.2.4/sbin && ./start-yarn.sh'>> /etc/rc.local")
     print("1. 请执行如下命令初始化hdfs:\n"
           "source /etc/profile \n"
-          "export JAVA_HOME=/data/jdk8u362-b09\n"
+          "export JAVA_HOME=/data/jdk8u452-b09\n"
           "cd /data/hadoop-3.2.4/bin && ./hdfs namenode -format\n"
           "2. 请执行如下命令启动hdfs及yarn：\n"
           "cd /data/hadoop-3.2.4/sbin && ./start-dfs.sh\n"
