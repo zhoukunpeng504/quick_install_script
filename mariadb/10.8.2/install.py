@@ -67,7 +67,7 @@ if __name__ == '__main__':
               "-v %s:/var/lib/mysql "
               "-v %s:/etc/mysql/conf.d   "
               f"-e  MARIADB_ROOT_PASSWORD=%s  "
-              "-d    mariadb:10.8.2 "  % (port,port,data_dir, conf_dir, password))
+              "-d    registry.wolover.cn/zxiat-community/mariadb:10.8.2 "  % (port,port,data_dir, conf_dir, password))
     print(cmd)
     os.system(cmd)
     print("mariadb 10.8.2安装成功！配置文件在容器内的/etc/mysql/conf.d目录，可自行优化配置！ ")

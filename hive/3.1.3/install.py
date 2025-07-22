@@ -11,16 +11,16 @@ if __name__ == '__main__':
     mysql_password = '123456'
     current_dir = os.path.abspath(os.path.dirname(__file__))
     # 安装包下载及解压
-    os.system("rm -rf apache-hive-3.1.3-bin.tar.gz")
-    os.system("rm -rf apache-hive-3.1.3-bin")
-    os.system("cd /data && cp %s/apache-hive-3.1.3-bin.tar.gz  /data/")
+    #os.system("rm -rf apache-hive-3.1.3-bin.tar.gz")
+    os.system("rm -rf /data/apache-hive-3.1.3-bin")
+    os.system("cd /data && cp %s/apache-hive-3.1.3-bin.tar.gz  /data/apache-hive-3.1.3-bin.tar.gz" % current_dir)
     os.system("cd /data && tar -zxvf apache-hive-3.1.3-bin.tar.gz")
     # 删除配置文件
     os.system("rm -rf /data/apache-hive-3.1.3-bin/conf")
     os.system("rm -rf /data/apache-hive-3.1.3-bin/lib/guava-*")
     os.system("rm -rf /data/apache-hive-3.1.3-bin/lib/mysql-connector-*")
     # 模板配置文件覆盖
-
+    os.system("mkdir -p /data/apache-hive-3.1.3-bin/lib")
     os.system("cp %s/mysql-connector-*  /data/apache-hive-3.1.3-bin/lib" % current_dir.rstrip("/"))
     os.system("cp %s/guava-* /data/apache-hive-3.1.3-bin/lib" % current_dir.rstrip("/"))
     os.system("cp -a %s/conf /data/apache-hive-3.1.3-bin" % current_dir.rstrip("/"))
